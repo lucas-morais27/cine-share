@@ -1,15 +1,16 @@
 package br.com.cineshare.entity;
 
-import br.com.cineshare.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
-@Table(name = "group_members")
+@Table(name = "messages")
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupMemberEntity {
+public class MessageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +24,8 @@ public class GroupMemberEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Enumerated(EnumType.STRING)
-    private Role role; // Definição do papel no grupo (ADMIN, MEMBER)
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String messageContent;
+
+    private LocalDateTime sentAt = LocalDateTime.now();
 }
