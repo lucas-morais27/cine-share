@@ -20,11 +20,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
+    private final NotificationService notificationService;
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, ReviewRepository reviewRepository) {
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, ReviewRepository reviewRepository, NotificationService notificationService) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -35,7 +37,7 @@ public class CommentService {
         Optional<ReviewEntity> review = reviewRepository.findById(request.getReviewId());
 
         if (user.isEmpty() || review.isEmpty()) {
-            return Optional.empty(); // Usuário ou avaliação não encontrado
+            return Optional.empty();
         }
 
         CommentEntity comment = new CommentEntity();
@@ -44,6 +46,13 @@ public class CommentService {
         comment.setContent(request.getContent());
 
         CommentEntity savedComment = commentRepository.save(comment);
+
+        // 🔔 Enviar notificação para o autor da review
+        notificationService.sendNotification(
+                review.get().getUser().getId(),
+                "Seu review recebeu um novo comentário de " + user.get().getName()
+        );
+
         return Optional.of(toResponseDTO(savedComment));
     }
 

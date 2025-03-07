@@ -2,9 +2,11 @@ package br.com.cineshare.service;
 
 import br.com.cineshare.dto.ReviewRequestDTO;
 import br.com.cineshare.dto.ReviewResponseDTO;
+import br.com.cineshare.entity.LikeEntity;
 import br.com.cineshare.entity.MovieEntity;
 import br.com.cineshare.entity.ReviewEntity;
 import br.com.cineshare.entity.UserEntity;
+import br.com.cineshare.repository.LikeRepository;
 import br.com.cineshare.repository.MovieRepository;
 import br.com.cineshare.repository.ReviewRepository;
 import br.com.cineshare.repository.UserRepository;
@@ -20,24 +22,27 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
+    private final LikeRepository likeRepository;
 
-    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, MovieRepository movieRepository) {
+    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, MovieRepository movieRepository, LikeRepository likeRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.movieRepository = movieRepository;
+        this.likeRepository = likeRepository;
     }
 
     /**
-     * Cria uma nova avaliação para um filme por um usuário.
+     * Cria uma nova review e adiciona automaticamente um like do autor.
      */
     public Optional<ReviewResponseDTO> createReview(ReviewRequestDTO reviewRequest) {
         Optional<UserEntity> user = userRepository.findById(reviewRequest.getUserId());
         Optional<MovieEntity> movie = movieRepository.findById(reviewRequest.getMovieId());
 
         if (user.isEmpty() || movie.isEmpty()) {
-            return Optional.empty(); // Usuário ou filme não encontrado
+            return Optional.empty(); // Retorna vazio se o usuário ou filme não existir
         }
 
+        // Criar a review
         ReviewEntity review = new ReviewEntity();
         review.setUser(user.get());
         review.setMovie(movie.get());
@@ -45,6 +50,14 @@ public class ReviewService {
         review.setReviewText(reviewRequest.getReviewText());
 
         ReviewEntity savedReview = reviewRepository.save(review);
+
+        // Criar um like automático para o autor da review
+        LikeEntity like = new LikeEntity();
+        like.setUser(user.get());
+        like.setReview(savedReview);
+
+        likeRepository.save(like); // Salva o like automaticamente
+
         return Optional.of(toResponseDTO(savedReview));
     }
 

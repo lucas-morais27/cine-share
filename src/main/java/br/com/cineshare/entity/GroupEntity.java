@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "groups")
+@Table(name = "user_groups")
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupEntity {

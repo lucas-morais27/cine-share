@@ -20,11 +20,13 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
+    private final NotificationService notificationService;
 
-    public LikeService(LikeRepository likeRepository, UserRepository userRepository, ReviewRepository reviewRepository) {
+    public LikeService(LikeRepository likeRepository, UserRepository userRepository, ReviewRepository reviewRepository, NotificationService notificationService) {
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -35,12 +37,11 @@ public class LikeService {
         Optional<ReviewEntity> review = reviewRepository.findById(request.getReviewId());
 
         if (user.isEmpty() || review.isEmpty()) {
-            return Optional.empty(); // Usuário ou avaliação não encontrado
+            return Optional.empty();
         }
 
-        // Verifica se o usuário já curtiu essa avaliação
         if (likeRepository.findByReviewIdAndUserId(request.getReviewId(), request.getUserId()).isPresent()) {
-            return Optional.empty(); // Usuário já curtiu essa avaliação
+            return Optional.empty();
         }
 
         LikeEntity like = new LikeEntity();
@@ -48,6 +49,13 @@ public class LikeService {
         like.setReview(review.get());
 
         LikeEntity savedLike = likeRepository.save(like);
+
+        // 🔔 Enviar notificação para o autor da review
+        notificationService.sendNotification(
+                review.get().getUser().getId(),
+                "Seu review recebeu um novo like de " + user.get().getName()
+        );
+
         return Optional.of(toResponseDTO(savedLike));
     }
 
