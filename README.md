@@ -1,6 +1,6 @@
 # 🎬 CineShare - Compartilhe e Avalie Filmes com Amigos
 
-[![Java](https://img.shields.io/badge/Java-22-blue)](https://www.oracle.com/java/)
+[![Java](https://img.shields.io/badge/Java-21-blue)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.4-green)](https://spring.io/projects/spring-boot)
 [![MySQL](https://img.shields.io/badge/MySQL-Database-blue)](https://www.mysql.com/)
 
@@ -19,7 +19,7 @@ CineShare é uma plataforma onde os usuários podem **compartilhar e avaliar fil
 ---
 
 ## 🛠 **Tecnologias Utilizadas**
-- **Java 22**
+- **Java 21**
 - **Spring Boot 3.2.4**
 - **Spring Data JPA**
 - **Spring Security (JWT - Futuro)**
