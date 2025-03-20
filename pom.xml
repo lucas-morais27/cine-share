@@ -14,7 +14,7 @@
 	<name>Cine Share</name>
 	<description>Shared movie rating system</description>
 	<properties>
-		<java.version>22</java.version>
+		<java.version>21</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
